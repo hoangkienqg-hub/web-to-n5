@@ -1,0 +1,1048 @@
+html_code = """<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bé Vui Học Số Thập Phân - Toán Lớp 5</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700;800&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #3b82f6;
+      --primary-dark: #1d4ed8;
+      --secondary: #fbbf24;
+      --accent: #10b981;
+      --coral: #f97316;
+      --correct: #22c55e;
+      --wrong: #ef4444;
+      --card-bg: rgba(255, 255, 255, 0.95);
+      --text-main: #1e293b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: linear-gradient(135deg, #a7f3d0 0%, #bae6fd 50%, #fed7aa 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      color: var(--text-main);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Floating cute background elements */
+    .bg-shape {
+      position: absolute;
+      opacity: 0.28;
+      pointer-events: none;
+      animation: floatSlow 15s ease-in-out infinite alternate;
+      z-index: 0;
+    }
+    .shape-1 { top: 6%; left: 8%; font-size: 50px; animation-duration: 12s; }
+    .shape-2 { top: 70%; left: 6%; font-size: 46px; animation-duration: 18s; }
+    .shape-3 { top: 12%; right: 9%; font-size: 52px; animation-duration: 14s; }
+    .shape-4 { bottom: 12%; right: 7%; font-size: 56px; animation-duration: 19s; }
+
+    @keyframes floatSlow {
+      0% { transform: translateY(0px) rotate(0deg); }
+      100% { transform: translateY(-28px) rotate(16deg); }
+    }
+
+    .game-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      width: 100%;
+      max-width: 800px;
+      border-radius: 28px;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.15), 0 0 0 6px #ffffff;
+      padding: 30px;
+      position: relative;
+      z-index: 1;
+      border: 4px solid #93c5fd;
+      transition: all 0.3s ease;
+    }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .screen.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.97) translateY(8px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* Header */
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 3px dashed #93c5fd;
+    }
+
+    .badge-topic {
+      background: linear-gradient(135deg, #3b82f6, #0284c7);
+      color: white;
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .score-badge {
+      background: #fef3c7;
+      color: #b45309;
+      border: 2px solid #fde68a;
+      padding: 6px 15px;
+      border-radius: 16px;
+      font-weight: 800;
+      font-size: 1.05rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Progress bar */
+    .progress-container {
+      width: 100%;
+      height: 12px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      margin-bottom: 22px;
+      overflow: hidden;
+      border: 2px solid #ffffff;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10b981, #06b6d4, #3b82f6);
+      width: 0%;
+      border-radius: 999px;
+      transition: width 0.4s ease;
+    }
+
+    /* Question Box */
+    .question-box {
+      background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%);
+      border: 2.5px solid #bfdbfe;
+      border-radius: 20px;
+      padding: 22px;
+      margin-bottom: 22px;
+      position: relative;
+    }
+
+    .question-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .q-number {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 900;
+      color: #2563eb;
+      font-size: 1.15rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .speech-status {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #0369a1;
+      background: #e0f2fe;
+      padding: 4px 12px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .speech-status.speaking {
+      animation: pulse 1s infinite alternate;
+      background: #fef08a;
+      color: #854d0e;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.98); }
+      100% { transform: scale(1.04); }
+    }
+
+    .q-text {
+      font-size: 1.25rem;
+      font-weight: 700;
+      line-height: 1.5;
+      color: #0f172a;
+    }
+
+    /* Options */
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .option-btn {
+      background: white;
+      border: 2.5px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 14px 20px;
+      font-family: 'Quicksand', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+      color: #334155;
+      outline: none;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      border-color: #38bdf8;
+      background: #f0f9ff;
+      box-shadow: 0 8px 15px -3px rgba(14, 165, 233, 0.15);
+    }
+
+    .opt-tag {
+      background: #f1f5f9;
+      color: #475569;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+
+    .option-btn:hover:not(:disabled) .opt-tag {
+      background: #0284c7;
+      color: white;
+    }
+
+    .option-btn.correct {
+      background: #dcfce7 !important;
+      border-color: #22c55e !important;
+      color: #14532d !important;
+    }
+    .option-btn.correct .opt-tag {
+      background: #22c55e;
+      color: white;
+    }
+
+    .option-btn.wrong {
+      background: #fee2e2 !important;
+      border-color: #ef4444 !important;
+      color: #7f1d1d !important;
+    }
+    .option-btn.wrong .opt-tag {
+      background: #ef4444;
+      color: white;
+    }
+
+    .option-btn:disabled {
+      cursor: default;
+    }
+
+    /* Explanation Box */
+    .explanation-box {
+      display: none;
+      background: #fefce8;
+      border: 2px dashed #facc15;
+      border-radius: 18px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      animation: popIn 0.3s ease;
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .exp-title {
+      font-weight: 800;
+      font-size: 1rem;
+      color: #854d0e;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .exp-content {
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #422006;
+      font-weight: 600;
+    }
+
+    /* Buttons */
+    .action-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 1.05rem;
+      padding: 12px 24px;
+      border-radius: 16px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      outline: none;
+    }
+
+    .btn:active {
+      transform: translateY(2px);
+    }
+
+    .btn-audio {
+      background: #e0f2fe;
+      color: #0284c7;
+      border: 2px solid #bae6fd;
+    }
+    .btn-audio:hover {
+      background: #bae6fd;
+    }
+
+    .btn-next {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      margin-left: auto;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+    }
+    .btn-next:hover {
+      background: linear-gradient(135deg, #059669, #047857);
+      transform: translateY(-2px);
+    }
+
+    /* Center screens */
+    .center-screen {
+      text-align: center;
+      padding: 30px 10px;
+    }
+
+    .hero-icon {
+      font-size: 80px;
+      margin-bottom: 16px;
+      animation: bounce 2s infinite;
+      display: inline-block;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
+    .screen-title {
+      font-family: 'Nunito', sans-serif;
+      font-size: 2.1rem;
+      font-weight: 900;
+      color: #1e3a8a;
+      margin-bottom: 12px;
+    }
+
+    .screen-desc {
+      font-size: 1.15rem;
+      color: #475569;
+      max-width: 580px;
+      margin: 0 auto 30px;
+      line-height: 1.6;
+      font-weight: 600;
+    }
+
+    .btn-start {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: white;
+      font-size: 1.3rem;
+      padding: 16px 40px;
+      border-radius: 999px;
+      box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+    }
+    .btn-start:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 14px 28px rgba(37, 99, 235, 0.45);
+    }
+
+    .score-summary {
+      background: #f8fafc;
+      border: 3px solid #e2e8f0;
+      border-radius: 24px;
+      padding: 24px;
+      max-width: 450px;
+      margin: 0 auto 30px;
+    }
+
+    .final-score-val {
+      font-family: 'Nunito', sans-serif;
+      font-size: 3.6rem;
+      font-weight: 900;
+      color: #10b981;
+      line-height: 1;
+      margin: 10px 0;
+    }
+
+    #confettiCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    .sound-tip {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+
+    @media (max-width: 600px) {
+      .game-card {
+        padding: 20px 16px;
+        border-radius: 20px;
+      }
+      .q-text {
+        font-size: 1.1rem;
+      }
+      .option-btn {
+        font-size: 0.95rem;
+        padding: 12px 14px;
+      }
+      .screen-title {
+        font-size: 1.6rem;
+      }
+      .final-score-val {
+        font-size: 2.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-shape shape-1">🔢</div>
+  <div class="bg-shape shape-2">📐</div>
+  <div class="bg-shape shape-3">⭐</div>
+  <div class="bg-shape shape-4">✏️</div>
+
+  <canvas id="confettiCanvas"></canvas>
+
+  <div class="game-card">
+
+    <!-- START SCREEN -->
+    <div id="startScreen" class="screen center-screen active">
+      <div class="hero-icon">🦉🔢🎈</div>
+      <h1 class="screen-title">Thử Thách: Số Thập Phân</h1>
+      <p class="screen-desc">
+        Cùng tham gia trả lời 10 câu hỏi trắc nghiệm Toán Lớp 5.<br>
+        Có giọng đọc câu hỏi, đáp án và lời giải chi tiết siêu sinh động!
+      </p>
+      <div>
+        <button class="btn btn-start" id="btnStartGame">🚀 Bắt Đầu Ngay</button>
+      </div>
+      <p class="sound-tip">💡 Hãy bật loa hoặc tai nghe để nghe câu hỏi và âm thanh vui nhộn nhé!</p>
+    </div>
+
+    <!-- QUIZ SCREEN -->
+    <div id="quizScreen" class="screen">
+      <div class="header-bar">
+        <div class="badge-topic" id="topicBadge">
+          <span>📘</span> <span id="topicName">Toán Lớp 5 - Số Thập Phân</span>
+        </div>
+        <div class="score-badge">
+          <span>⭐</span> Điểm: <span id="currentScore">0</span>
+        </div>
+      </div>
+
+      <div class="progress-container">
+        <div class="progress-fill" id="progressBar"></div>
+      </div>
+
+      <div class="question-box">
+        <div class="question-meta">
+          <span class="q-number" id="questionNumber">Câu 1 / 10</span>
+          <span class="speech-status" id="voiceIndicator">
+            <span id="voiceIcon">🔊</span> <span id="voiceText">Đang đọc...</span>
+          </span>
+        </div>
+        <div class="q-text" id="questionText">Đang tải câu hỏi...</div>
+      </div>
+
+      <div class="options-grid" id="optionsContainer">
+        <!-- Generated by JS -->
+      </div>
+
+      <div class="explanation-box" id="explanationBox">
+        <div class="exp-title">
+          <span>💡</span> <strong>Lời giải chi tiết:</strong>
+        </div>
+        <div class="exp-content" id="explanationText"></div>
+      </div>
+
+      <div class="action-bar">
+        <button class="btn btn-audio" id="btnReplayAudio">
+          <span>🔊</span> Nghe lại
+        </button>
+        <button class="btn btn-next" id="btnNextQuestion" style="display: none;">
+          Tiếp theo <span>➡️</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- RESULT SCREEN -->
+    <div id="resultScreen" class="screen center-screen">
+      <div class="hero-icon" id="resultIcon">🎉</div>
+      <h1 class="screen-title" id="resultTitle">Hoàn Thành Thử Thách!</h1>
+      <div class="score-summary">
+        <p style="font-weight: 700; color: #64748b;">Tổng kết điểm số</p>
+        <div class="final-score-val" id="finalScore">10/10</div>
+        <p style="font-weight: 700;" id="resultFeedback">Em nắm rất vững kiến thức bài Số thập phân!</p>
+      </div>
+      <div>
+        <button class="btn btn-start" id="btnRestart">🔄 Chơi Lại Lần Nữa</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // --- 10 QUESTIONS DATASET ---
+    const quizData = [
+      {
+        part: "Nhận biết hàng số",
+        question: "Trong số thập phân 135,729, chữ số 7 thuộc hàng nào?",
+        speechQuestion: "Trong số thập phân 135 phẩy 729, chữ số 7 thuộc hàng nào?",
+        options: [
+          { key: "A", text: "Hàng chục", speech: "Hàng chục" },
+          { key: "B", text: "Hàng phần mười", speech: "Hàng phần mười" },
+          { key: "C", text: "Hàng phần trăm", speech: "Hàng phần trăm" },
+          { key: "D", text: "Hàng phần nghìn", speech: "Hàng phần nghìn" }
+        ],
+        correct: "B",
+        explanation: "Chữ số 7 đứng ngay sau dấu phẩy ở vị trí đầu tiên của phần thập phân nên thuộc hàng phần mười, có giá trị là 0,7."
+      },
+      {
+        part: "Viết số thập phân",
+        question: "Số thập phân gồm 'Bốn mươi hai đơn vị, sáu phần trăm, tám phần nghìn' được viết là:",
+        speechQuestion: "Số thập phân gồm: Bốn mươi hai đơn vị, sáu phần trăm, tám phần nghìn được viết là:",
+        options: [
+          { key: "A", text: "42,68", speech: "42 phẩy 68" },
+          { key: "B", text: "42,608", speech: "42 phẩy 608" },
+          { key: "C", text: "42,068", speech: "42 phẩy 068" },
+          { key: "D", text: "42,680", speech: "42 phẩy 680" }
+        ],
+        correct: "C",
+        explanation: "Phần nguyên là 42. Phần thập phân khuyết hàng phần mười nên viết chữ số 0, hàng phần trăm là 6 và hàng phần nghìn là 8, ta được số 42,068."
+      },
+      {
+        part: "Phân số sang số thập phân",
+        question: "Phân số thập phân 2 025/100 được viết dưới dạng số thập phân là:",
+        speechQuestion: "Phân số thập phân 2025 phần 100 được viết dưới dạng số thập phân là:",
+        options: [
+          { key: "A", text: "2,025", speech: "2 phẩy 025" },
+          { key: "B", text: "20,25", speech: "20 phẩy 25" },
+          { key: "C", text: "202,5", speech: "202 phẩy 5" },
+          { key: "D", text: "0,2025", speech: "0 phẩy 2025" }
+        ],
+        correct: "B",
+        explanation: "Mẫu số 100 có hai chữ số 0 nên phần thập phân có 2 chữ số. Do đó 2 025 phần 100 viết thành 20,25."
+      },
+      {
+        part: "Số thập phân bằng nhau",
+        question: "Số thập phân nào dưới đây KHÔNG bằng số 8,5?",
+        speechQuestion: "Số thập phân nào dưới đây không bằng số 8 phẩy 5?",
+        options: [
+          { key: "A", text: "8,50", speech: "8 phẩy 50" },
+          { key: "B", text: "8,500", speech: "8 phẩy 500" },
+          { key: "C", text: "8,05", speech: "8 phẩy 05" },
+          { key: "D", text: "8,5000", speech: "8 phẩy 5000" }
+        ],
+        correct: "C",
+        explanation: "Số 8,05 có chữ số hàng phần mười là 0, khác với 8,5 có chữ số hàng phần mười là 5 nên 8,05 không bằng 8,5."
+      },
+      {
+        part: "So sánh số thập phân",
+        question: "Sắp xếp các số 3,604; 2,875; 2,857; 3,106 theo thứ tự từ bé đến lớn ta được:",
+        speechQuestion: "Sắp xếp các số 3 phẩy 604; 2 phẩy 875; 2 phẩy 857; 3 phẩy 106 theo thứ tự từ bé đến lớn ta được:",
+        options: [
+          { key: "A", text: "2,857 < 2,875 < 3,106 < 3,604", speech: "2 phẩy 857 nhỏ hơn 2 phẩy 875 nhỏ hơn 3 phẩy 106 nhỏ hơn 3 phẩy 604" },
+          { key: "B", text: "2,875 < 2,857 < 3,106 < 3,604", speech: "2 phẩy 875 nhỏ hơn 2 phẩy 857 nhỏ hơn 3 phẩy 106 nhỏ hơn 3 phẩy 604" },
+          { key: "C", text: "3,604 < 3,106 < 2,875 < 2,857", speech: "3 phẩy 604 nhỏ hơn 3 phẩy 106 nhỏ hơn 2 phẩy 875 nhỏ hơn 2 phẩy 857" },
+          { key: "D", text: "2,857 < 2,875 < 3,604 < 3,106", speech: "2 phẩy 857 nhỏ hơn 2 phẩy 875 nhỏ hơn 3 phẩy 604 nhỏ hơn 3 phẩy 106" }
+        ],
+        correct: "A",
+        explanation: "So sánh phần nguyên và các hàng phần mười, phần trăm ta có: 2,857 < 2,875 < 3,106 < 3,604."
+      },
+      {
+        part: "Đổi đơn vị đo độ dài",
+        question: "Viết số đo độ dài 4 m 8 cm dưới dạng số thập phân với đơn vị mét (m) ta được:",
+        speechQuestion: "Viết số đo độ dài 4 mét 8 xăng ti mét dưới dạng số thập phân với đơn vị mét ta được:",
+        options: [
+          { key: "A", text: "4,8 m", speech: "4 phẩy 8 mét" },
+          { key: "B", text: "4,08 m", speech: "4 phẩy 08 mét" },
+          { key: "C", text: "4,008 m", speech: "4 phẩy 008 mét" },
+          { key: "D", text: "48 m", speech: "48 mét" }
+        ],
+        correct: "B",
+        explanation: "Vì 1 mét bằng 100 xăng-ti-mét nên 8 cm bằng 8 phần 100 mét, tức là 0,08 mét. Do đó 4m 8cm viết thành 4,08 mét."
+      },
+      {
+        part: "Đổi đơn vị đo khối lượng",
+        question: "Một túi quả dưa hấu cân nặng 2 kg 350 g. Viết khối lượng dưới dạng số thập phân với đơn vị ki-lô-gam (kg) ta được:",
+        speechQuestion: "Một túi quả dưa hấu cân nặng 2 ki-lô-gam 350 gam. Viết khối lượng dưới dạng số thập phân với đơn vị ki-lô-gam ta được:",
+        options: [
+          { key: "A", text: "2,35 kg", speech: "2 phẩy 35 ki-lô-gam" },
+          { key: "B", text: "2,035 kg", speech: "2 phẩy 035 ki-lô-gam" },
+          { key: "C", text: "23,5 kg", speech: "23 phẩy 5 ki-lô-gam" },
+          { key: "D", text: "0,235 kg", speech: "0 phẩy 235 ki-lô-gam" }
+        ],
+        correct: "A",
+        explanation: "Vì 1 kg bằng 1 000 g nên 350 g bằng 0,350 kg (hay 0,35 kg). Do đó 2 kg 350 g bằng 2,35 kg."
+      },
+      {
+        part: "Vận dụng viết số đo",
+        question: "Đường dài 1 km 75 m; xe chở 3 tấn 450 kg. Viết độ dài (km) và khối lượng (tấn) dưới dạng số thập phân lần lượt là:",
+        speechQuestion: "Đoạn đường dài 1 ki-lô-mét 75 mét; xe chở 3 tấn 450 ki-lô-gam. Viết độ dài theo ki-lô-mét và khối lượng theo tấn lần lượt là:",
+        options: [
+          { key: "A", text: "1,75 km và 3,45 tấn", speech: "1 phẩy 75 ki-lô-mét và 3 phẩy 45 tấn" },
+          { key: "B", text: "1,075 km và 3,45 tấn", speech: "1 phẩy 075 ki-lô-mét và 3 phẩy 45 tấn" },
+          { key: "C", text: "1,075 km và 3,045 tấn", speech: "1 phẩy 075 ki-lô-mét và 3 phẩy 045 tấn" },
+          { key: "D", text: "1,75 km và 3,045 tấn", speech: "1 phẩy 75 ki-lô-mét và 3 phẩy 045 tấn" }
+        ],
+        correct: "B",
+        explanation: "1 km 75 m đổi thành 1,075 km; 3 tấn 450 kg đổi thành 3,45 tấn. Vậy hai số tương ứng là 1,075 km và 3,45 tấn."
+      },
+      {
+        part: "So sánh khối lượng",
+        question: "Tú cân 3 con vật: Thỏ nặng 6 kg 75 g; Ngỗng nặng 6 100 g; Mèo nặng 6,095 kg. Hỏi con vật nào nặng nhất?",
+        speechQuestion: "Tú cân 3 con vật: Thỏ nặng 6 ki-lô-gam 75 gam; Ngỗng nặng 6100 gam; Mèo nặng 6 phẩy 095 ki-lô-gam. Hỏi con vật nào nặng nhất?",
+        options: [
+          { key: "A", text: "Thỏ", speech: "Thỏ" },
+          { key: "B", text: "Ngỗng", speech: "Ngỗng" },
+          { key: "C", text: "Mèo", speech: "Mèo" },
+          { key: "D", text: "Cả ba con nặng bằng nhau", speech: "Cả ba con nặng bằng nhau" }
+        ],
+        correct: "B",
+        explanation: "Đổi về kg: Thỏ nặng 6,075 kg; Ngỗng nặng 6,1 kg; Mèo nặng 6,095 kg. Vì 6,1 kg lớn nhất nên con Ngỗng nặng nhất."
+      },
+      {
+        part: "Lập số thập phân",
+        question: "Cho 4 thẻ ghi chữ số [7], [0], [2] và dấu phẩy [,]. Số thập phân LỚN NHẤT có 1 chữ số ở phần nguyên và 2 chữ số ở phần thập phân là:",
+        speechQuestion: "Cho bốn tấm thẻ ghi chữ số 7, 0, 2 và dấu phẩy. Số thập phân lớn nhất có một chữ số ở phần nguyên và hai chữ số ở phần thập phân lập được là:",
+        options: [
+          { key: "A", text: "7,20", speech: "7 phẩy 20" },
+          { key: "B", text: "7,02", speech: "7 phẩy 02" },
+          { key: "C", text: "2,70", speech: "2 phẩy 70" },
+          { key: "D", text: "0,72", speech: "0 phẩy 72" }
+        ],
+        correct: "A",
+        explanation: "Để có số lớn nhất, chọn chữ số lớn nhất là 7 làm phần nguyên. Phần thập phân xếp chữ số lớn hơn ở hàng phần mười (2) rồi đến (0), ta được 7,20."
+      }
+    ];
+
+    // --- GAME STATE ---
+    let currentIndex = 0;
+    let score = 0;
+    let hasAnswered = false;
+    let synth = window.speechSynthesis;
+    let viVoice = null;
+
+    function initVoices() {
+      if (!('speechSynthesis' in window)) return;
+      const voices = synth.getVoices();
+      viVoice = voices.find(v => v.lang === 'vi-VN' || v.lang.startsWith('vi')) || null;
+    }
+    initVoices();
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+      speechSynthesis.onvoiceschanged = initVoices;
+    }
+
+    // --- SOUND EFFECTS (WEB AUDIO API) ---
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function getAudioContext() {
+      if (!audioCtx) audioCtx = new AudioContext();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      return audioCtx;
+    }
+
+    function playSound(type) {
+      try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+
+        if (type === 'correct') {
+          // Cheerful chime: C5 -> E5 -> G5 -> C6
+          const freqs = [523.25, 659.25, 783.99, 1046.50];
+          freqs.forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+            gain.gain.setValueAtTime(0.18, now + idx * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.35);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now + idx * 0.08);
+            osc.stop(now + idx * 0.08 + 0.36);
+          });
+        } else if (type === 'wrong') {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(220, now);
+          osc.frequency.exponentialRampToValueAtTime(110, now + 0.3);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.36);
+        } else if (type === 'victory') {
+          const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+          notes.forEach((f, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(f, now + i * 0.12);
+            gain.gain.setValueAtTime(0.2, now + i * 0.12);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.6);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now + i * 0.12);
+            osc.stop(now + i * 0.12 + 0.65);
+          });
+        }
+      } catch (e) {
+        console.warn("Web Audio not allowed or failed:", e);
+      }
+    }
+
+    // --- SPEECH SYNTHESIS ---
+    function stopSpeech() {
+      if (synth && synth.speaking) {
+        synth.cancel();
+      }
+      setVoiceIndicator(false);
+    }
+
+    function setVoiceIndicator(isSpeaking, text = "Đang đọc...") {
+      const ind = document.getElementById('voiceIndicator');
+      const txt = document.getElementById('voiceText');
+      if (isSpeaking) {
+        ind.classList.add('speaking');
+        txt.textContent = text;
+      } else {
+        ind.classList.remove('speaking');
+        txt.textContent = "Sẵn sàng";
+      }
+    }
+
+    function speakText(text, onComplete = null) {
+      if (!('speechSynthesis' in window)) return;
+      stopSpeech();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.95;
+      utterance.pitch = 1.05;
+      if (viVoice) {
+        utterance.voice = viVoice;
+        utterance.lang = viVoice.lang;
+      } else {
+        utterance.lang = 'vi-VN';
+      }
+
+      utterance.onstart = () => setVoiceIndicator(true, "Đang đọc...");
+      utterance.onend = () => {
+        setVoiceIndicator(false);
+        if (onComplete) onComplete();
+      };
+      utterance.onerror = () => setVoiceIndicator(false);
+
+      synth.speak(utterance);
+    }
+
+    // --- GAME FLOW LOGIC ---
+    const startScreen = document.getElementById('startScreen');
+    const quizScreen = document.getElementById('quizScreen');
+    const resultScreen = document.getElementById('resultScreen');
+
+    const btnStart = document.getElementById('btnStartGame');
+    const btnRestart = document.getElementById('btnRestart');
+    const btnNext = document.getElementById('btnNextQuestion');
+    const btnReplay = document.getElementById('btnReplayAudio');
+
+    const topicBadge = document.getElementById('topicName');
+    const qNum = document.getElementById('questionNumber');
+    const qText = document.getElementById('questionText');
+    const optionsContainer = document.getElementById('optionsContainer');
+    const explanationBox = document.getElementById('explanationBox');
+    const explanationText = document.getElementById('explanationText');
+    const progressBar = document.getElementById('progressBar');
+    const currentScoreEl = document.getElementById('currentScore');
+
+    btnStart.addEventListener('click', () => {
+      getAudioContext();
+      startScreen.classList.remove('active');
+      resultScreen.classList.remove('active');
+      quizScreen.classList.add('active');
+      currentIndex = 0;
+      score = 0;
+      currentScoreEl.textContent = "0";
+      loadQuestion();
+    });
+
+    btnRestart.addEventListener('click', () => {
+      resultScreen.classList.remove('active');
+      quizScreen.classList.add('active');
+      currentIndex = 0;
+      score = 0;
+      currentScoreEl.textContent = "0";
+      loadQuestion();
+    });
+
+    btnNext.addEventListener('click', () => {
+      stopSpeech();
+      currentIndex++;
+      if (currentIndex < quizData.length) {
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    });
+
+    btnReplay.addEventListener('click', () => {
+      const q = quizData[currentIndex];
+      if (!hasAnswered) {
+        readFullQuestion(q);
+      } else {
+        readExplanationOnly(q);
+      }
+    });
+
+    function loadQuestion() {
+      hasAnswered = false;
+      btnNext.style.display = 'none';
+      explanationBox.style.display = 'none';
+
+      const q = quizData[currentIndex];
+      topicBadge.textContent = q.part;
+      qNum.textContent = `Câu ${currentIndex + 1} / ${quizData.length}`;
+      qText.textContent = q.question;
+      currentScoreEl.textContent = score;
+
+      const progressPercent = (currentIndex / quizData.length) * 100;
+      progressBar.style.width = `${progressPercent}%`;
+
+      optionsContainer.innerHTML = '';
+      q.options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.setAttribute('data-key', opt.key);
+        btn.innerHTML = `<span class="opt-tag">${opt.key}</span> <span>${opt.text}</span>`;
+        btn.addEventListener('click', () => selectAnswer(opt.key));
+        optionsContainer.appendChild(btn);
+      });
+
+      readFullQuestion(q);
+    }
+
+    function readFullQuestion(q) {
+      let script = `Câu ${currentIndex + 1}. ${q.speechQuestion || q.question}. `;
+      q.options.forEach(o => {
+        script += `Đáp án ${o.key}: ${o.speech || o.text}. `;
+      });
+      speakText(script);
+    }
+
+    function selectAnswer(selectedKey) {
+      if (hasAnswered) return;
+      hasAnswered = true;
+      stopSpeech();
+
+      const q = quizData[currentIndex];
+      const isCorrect = (selectedKey === q.correct);
+      const allBtns = optionsContainer.querySelectorAll('.option-btn');
+
+      allBtns.forEach(btn => {
+        btn.disabled = true;
+        const key = btn.getAttribute('data-key');
+        if (key === q.correct) {
+          btn.classList.add('correct');
+        } else if (key === selectedKey) {
+          btn.classList.add('wrong');
+        }
+      });
+
+      if (isCorrect) {
+        score++;
+        currentScoreEl.textContent = score;
+        playSound('correct');
+      } else {
+        playSound('wrong');
+      }
+
+      explanationBox.style.display = 'block';
+      explanationText.textContent = q.explanation;
+      btnNext.style.display = 'inline-flex';
+
+      readExplanationOnly(q, isCorrect);
+    }
+
+    function readExplanationOnly(q, isCorrect = null) {
+      let message = "";
+      if (isCorrect !== null) {
+        message = isCorrect ? "Chính xác! Hoan hô em. " : "Chưa chính xác rồi. ";
+      }
+      message += `Đáp án đúng là ${q.correct}. Giải thích: ${q.explanation}`;
+      speakText(message);
+    }
+
+    function showResults() {
+      stopSpeech();
+      quizScreen.classList.remove('active');
+      resultScreen.classList.add('active');
+
+      const finalScoreEl = document.getElementById('finalScore');
+      const resultTitleEl = document.getElementById('resultTitle');
+      const resultFeedbackEl = document.getElementById('resultFeedback');
+      const resultIconEl = document.getElementById('resultIcon');
+
+      finalScoreEl.textContent = `${score} / ${quizData.length}`;
+
+      playSound('victory');
+      triggerConfetti();
+
+      let closingSpeech = "";
+      if (score >= 9) {
+        resultIconEl.textContent = "🏆";
+        resultTitleEl.textContent = "Xuất Sắc Tuyệt Vời!";
+        resultFeedbackEl.textContent = "Em đã hiểu rất sâu và làm chủ kiến thức bài Số thập phân!";
+        closingSpeech = `Chúc mừng em đã hoàn thành xuất sắc thử thách với số điểm ${score} trên 10! Em học toán rất giỏi.`;
+      } else if (score >= 7) {
+        resultIconEl.textContent = "🎉";
+        resultTitleEl.textContent = "Kết Quả Rất Tốt!";
+        resultFeedbackEl.textContent = "Em nắm bài rất chắc, rèn luyện thêm một chút là đạt điểm tuyệt đối!";
+        closingSpeech = `Chúc mừng em đã đạt ${score} trên 10 điểm. Một kết quả rất tuyệt vời!`;
+      } else {
+        resultIconEl.textContent = "🌱";
+        resultTitleEl.textContent = "Cố Gắng Thêm Nhé!";
+        resultFeedbackEl.textContent = "Em hãy ôn lại các quy tắc đổi đơn vị và so sánh số thập phân để làm tốt hơn nhé!";
+        closingSpeech = `Em đạt ${score} trên 10 điểm. Hãy cùng ôn lại bài học và thử sức lại lần nữa nhé!`;
+      }
+
+      setTimeout(() => {
+        speakText(closingSpeech);
+      }, 500);
+    }
+
+    // --- CONFETTI EFFECT ---
+    function triggerConfetti() {
+      const canvas = document.getElementById('confettiCanvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const particles = [];
+      const colors = ['#22c55e', '#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4'];
+
+      for (let i = 0; i < 90; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height - canvas.height,
+          size: Math.random() * 9 + 4,
+          speedY: Math.random() * 4 + 2,
+          speedX: (Math.random() - 0.5) * 3,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          rotSpeed: (Math.random() - 0.5) * 6
+        });
+      }
+
+      let frameCount = 0;
+      function render() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          p.y += p.speedY;
+          p.x += p.speedX;
+          p.rotation += p.rotSpeed;
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rotation * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+          ctx.restore();
+
+          if (p.y > canvas.height) {
+            p.y = -10;
+            p.x = Math.random() * canvas.width;
+          }
+        });
+
+        frameCount++;
+        if (frameCount < 230) {
+          requestAnimationFrame(render);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+      render();
+    }
+
+    window.addEventListener('resize', () => {
+      const canvas = document.getElementById('confettiCanvas');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
+</body>
+</html>"""
+
+with open("index.html", "w", encoding="utf-8") as f:
+    f.write(html_code)
+
+print("Generated index.html successfully.")
